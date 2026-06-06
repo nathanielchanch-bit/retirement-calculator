@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的退休計算機</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        .input-group { margin-bottom: 15px; }
+        label { display: inline-block; width: 120px; font-weight: bold; }
+        input { padding: 5px; width: 150px; }
+        button { padding: 10px 20px; background-color: #007BFF; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .result { margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #28a745; }
+    </style>
+</head>
+<body>
+
+    <h2>退休資金計算機 (單位: 萬港元)</h2>
+
+    <div class="input-group">
+        <label>初始現金:</label>
+        <input type="number" id="cash" value="200" step="10">
+    </div>
+    <div class="input-group">
+        <label>每月被動收入:</label>
+        <input type="number" id="income" value="1.9" step="0.1"> 
+        <small>(例如: 年金 1.5 + 長生津 0.4)</small>
+    </div>
+    <div class="input-group">
+        <label>每月開支:</label>
+        <input type="number" id="expense" value="3" step="0.1">
+    </div>
+    <div class="input-group">
+        <label>計算年期 (x年):</label>
+        <input type="number" id="years" value="10" step="1">
+    </div>
+
+    <button onclick="calculateRetirement()">計算</button>
+
+    <div class="result" id="resultBox" style="display:none;">
+        <h3 id="resultTitle">計算結果：</h3>
+        <p id="yearlyFlow"></p>
+        <p id="totalSpent"></p>
+        <p id="remainingCash" style="font-weight: bold; font-size: 1.2em;"></p>
+    </div>
+
+    <script>
+        function calculateRetirement() {
+            // 獲取輸入數值
+            const cash = parseFloat(document.getElementById('cash').value);
+            const income = parseFloat(document.getElementById('income').value);
+            const expense = parseFloat(document.getElementById('expense').value);
+            const years = parseInt(document.getElementById('years').value);
+
+            // 計算每月與每年淨現金流
+            const monthlyNetFlow = income - expense;
+            const yearlyNetFlow = monthlyNetFlow * 12;
+
+            // 計算 x 年後的數據
+            const totalCashBurn = (expense * 12) * years; // X年總開支
+            const remaining = cash + (yearlyNetFlow * years); // X年後剩餘現金
+
+            // 顯示結果
+            const resultBox = document.getElementById('resultBox');
+            resultBox.style.display = 'block';
+
+            document.getElementById('yearlyFlow').innerText = `每年淨現金流: ${yearlyNetFlow > 0 ? '+' : ''}${yearlyNetFlow.toFixed(2)} 萬`;
+            document.getElementById('totalSpent').innerText = `${years} 年總共開支: ${totalCashBurn.toFixed(2)} 萬`;
+            
+            const remainText = document.getElementById('remainingCash');
+            if (remaining >= 0) {
+                remainText.innerText = `${years} 年後剩餘現金: ${remaining.toFixed(2)} 萬 (夠洗！🎉)`;
+                remainText.style.color = 'green';
+            } else {
+                remainText.innerText = `${years} 年後資金見底: ${remaining.toFixed(2)} 萬 (要諗諗計啦！⚠️)`;
+                remainText.style.color = 'red';
+            }
+        }
+    </script>
+
+</body>
+</html>
